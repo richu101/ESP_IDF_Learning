@@ -14,8 +14,8 @@ while (true)
 {
 status = !status;
 printf("Hello world!\n");
-gpio_set_level(2,status );
-delay(1000);
+gpio_set_level(2,status);
+delay(100);
 ESP_LOGE("TAG", "Error message!");
 ESP_LOGW("TAG", "Warning message!");
 ESP_LOGI("TAG", "Info message!");
