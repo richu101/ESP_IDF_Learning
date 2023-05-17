@@ -122,7 +122,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("E:/ESP_WorkSpace/study/build/esp-idf/ulp/cmake_install.cmake")
   include("E:/ESP_WorkSpace/study/build/esp-idf/wifi_provisioning/cmake_install.cmake")
   include("E:/ESP_WorkSpace/study/build/esp-idf/main/cmake_install.cmake")
-  include("E:/ESP_WorkSpace/study/build/esp-idf/components/cmake_install.cmake")
+  include("E:/ESP_WorkSpace/study/build/esp-idf/arduino/cmake_install.cmake")
 
 endif()
 

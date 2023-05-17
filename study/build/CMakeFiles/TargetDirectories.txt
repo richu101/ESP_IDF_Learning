@@ -676,10 +676,10 @@ E:/ESP_WorkSpace/study/build/esp-idf/main/CMakeFiles/list_install_components.dir
 E:/ESP_WorkSpace/study/build/esp-idf/main/CMakeFiles/install.dir
 E:/ESP_WorkSpace/study/build/esp-idf/main/CMakeFiles/install/local.dir
 E:/ESP_WorkSpace/study/build/esp-idf/main/CMakeFiles/install/strip.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/__idf_components.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/edit_cache.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/rebuild_cache.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/list_install_components.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/install.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/install/local.dir
-E:/ESP_WorkSpace/study/build/esp-idf/components/CMakeFiles/install/strip.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/__idf_arduino.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/edit_cache.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/rebuild_cache.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/list_install_components.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/install.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/install/local.dir
+E:/ESP_WorkSpace/study/build/esp-idf/arduino/CMakeFiles/install/strip.dir
