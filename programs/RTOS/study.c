@@ -16,7 +16,7 @@ static void IRAM_ATTR gpio_isr_handler(void *args)
     xQueueSendFromISR(intreptqueue,&pin,NULL); 
 }
 void motiondetected(void *args)
-{ 
+{
     int PinNumber;
     while(1)
     {

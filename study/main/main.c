@@ -1,16 +1,57 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
+#include "freertos/semphr.h"
 #include "esp_log.h"
 #include  "driver/gpio.h"
-
+#include "arduino_fun.h"
 
 #define switchpin 26
-
+#define LED 25
 QueueHandle_t intreptqueue;
 
-static void IRAM_ATTR gpio_isr_handler(void *args)
+void setpwmpin(int pin)
+{
+    ledc_timer_config_t timer = {
+    .speed_mode = LEDC_LOW_SPEED_MODE,
+    .duty_resolution = LEDC_TIMER_10_BIT,
+    .timer_num = LEDC_TIMER_0,
+    .freq_hz = 5000,
+    .clk_cfg = LEDC_APB_CLK
+
+   }; 
+
+ledc_timer_config(&timer);
+ledc_channel_config_t channel = {
+.gpio_num = pin,
+.speed_mode = LEDC_LOW_SPEED_MODE,
+.channel = LEDC_CHANNEL_0,
+.timer_sel = LEDC_TIMER_0, 
+.duty = 1000,
+.hpoint = 0
+};
+ledc_channel_config(&channel);
+} 
+ void led_control(){ 
+    for(int i = 1;i<=5;i++)
+    {
+        for(int i = 0 ; i < 1024; i++)
+        {
+            ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0);
+            vTaskDelay(10/portTICK_PERIOD_MS);
+        }
+        for(int i = 1023 ; i >= 0; i--)
+        {
+            ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
+            ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0);
+            vTaskDelay(10/portTICK_PERIOD_MS);
+        }
+    }
+}
+
+
+static void IRAM_ATTR gpio_isr_handler(void *args) //Intrrept Function
 {
     int pin = (int *)args;
     xQueueSendFromISR(intreptqueue,&pin,NULL); 
@@ -25,20 +66,18 @@ void motiondetected(void *args)
         if(xQueueReceive(intreptqueue,&pin,portMAX_DELAY))
         {
             PinNumber = pin;
-            // disable the intrrept for removing douncing
-            gpio_isr_handler_remove(switchpin);
-            // wait for 10ms
 
-            //do work
+            gpio_isr_handler_remove(switchpin);
+
             do
             {
                 vTaskDelay(20/portTICK_PERIOD_MS);
-            } while (gpio_get_level(switchpin)==1);
+            } while (gpio_get_level(switchpin)==1); // DEBOUNCING
             
 
             printf("Pin %d is HIGH",PinNumber);
+            led_control();
 
-            // Enable intrrept
             gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
         }
@@ -46,6 +85,7 @@ void motiondetected(void *args)
         
     }
 }
+
 void app_main(void)
 {
 
@@ -54,11 +94,16 @@ gpio_set_direction(switchpin, GPIO_MODE_INPUT);
 gpio_pulldown_en(switchpin);
 gpio_pullup_dis(switchpin);
 gpio_set_intr_type(switchpin,GPIO_INTR_POSEDGE);
-
+pinMode(LED,output);
+setpwmpin();
 intreptqueue = xQueueCreate(10,sizeof(int));
+
 xTaskCreate(motiondetected," motion detected",2040,NULL,1,NULL);
+// xTaskCreate(led_control,"Control the led",2040,NULL,1,NULL);
 
 gpio_install_isr_service(0);
 gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
 }
+
+
