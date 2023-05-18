@@ -1,3 +1,26 @@
+/*
+
+Task: PIR Sensor Integration
+Objective: To evaluate knowledge of sensor integration and event handling.
+Instructions:
+1. Connect the PIR sensor to the ESP32 using the jumper wires.
+2. Implement a multitasking solution using FreeRTOS tasks and semaphores to detect motion events triggered by the PIR sensor.
+          Create two tasks:
+              Task 1: PIR Sensor Task:
+                 1. Continuously monitor the PIR sensor's output using GPIO interrupts.
+                 2. Upon motion detection, set a semaphore to indicate the event.
+              Task 2: LED Control Task:
+                 1. Wait for the semaphore indicating motion detection.
+                 2. Toggle an LED connected to another GPIO pin to indicate the event.
+4. Implement a delay to ignore subsequent motion events for a certain period after the initial detection.
+5. Ensure proper initialization and configuration of the interrupt for the PIR sensor.
+6. Implement any necessary debouncing or filtering mechanisms to handle false triggers.
+7. You may change the LED so to fade from low to high and high to low for 5 times (optional)
+
+*/
+
+
+
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -36,10 +59,11 @@ ledc_channel_config_t channel = {
 ledc_channel_config(&channel);
 } 
  void led_control(){ 
+
     for(int j = 1;j<=5;j++)
     {
 
-        printf("LED fade count = %d \n",j);
+        ESP_LOGI("LOG","LED fade count = %d \n",j);
         for(int i = 0 ; i < 1024; i+=20)
         {
             ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
@@ -80,14 +104,15 @@ void motiondetected(void *args)
             } while (gpio_get_level(switchpin)==1); // DEBOUNCING
             
 
-            printf("Pin %d is HIGH",PinNumber);
-        
+            
+            ESP_LOGI("log","motion detected Count = %d\n",count++);
         led_control();
 
-            gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
+        gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
         }
-        printf("motion detected - Count = %d\n",count++);
+        
+        
         
     }
 }
@@ -109,7 +134,3 @@ gpio_install_isr_service(0);
 gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
 }
-
-
-
-
