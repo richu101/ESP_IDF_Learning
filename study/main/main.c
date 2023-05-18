@@ -5,6 +5,9 @@
 #include "esp_log.h"
 #include  "driver/gpio.h"
 #include "arduino_fun.h"
+#include "driver/ledc.h"
+#include "esp_err.h"
+
 
 #define switchpin 26
 #define LED 25
@@ -27,21 +30,23 @@ ledc_channel_config_t channel = {
 .speed_mode = LEDC_LOW_SPEED_MODE,
 .channel = LEDC_CHANNEL_0,
 .timer_sel = LEDC_TIMER_0, 
-.duty = 1000,
+.duty = 0,
 .hpoint = 0
 };
 ledc_channel_config(&channel);
 } 
  void led_control(){ 
-    for(int i = 1;i<=5;i++)
+    for(int j = 1;j<=5;j++)
     {
-        for(int i = 0 ; i < 1024; i++)
+
+        printf("LED fade count = %d \n",j);
+        for(int i = 0 ; i < 1024; i+=20)
         {
             ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
             ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0);
             vTaskDelay(10/portTICK_PERIOD_MS);
         }
-        for(int i = 1023 ; i >= 0; i--)
+        for(int i = 1023 ; i >= 0; i-=20)
         {
             ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
             ledc_update_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0);
@@ -76,7 +81,8 @@ void motiondetected(void *args)
             
 
             printf("Pin %d is HIGH",PinNumber);
-            led_control();
+        
+        led_control();
 
             gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
@@ -93,17 +99,17 @@ gpio_pad_select_gpio(switchpin);
 gpio_set_direction(switchpin, GPIO_MODE_INPUT);
 gpio_pulldown_en(switchpin);
 gpio_pullup_dis(switchpin);
-gpio_set_intr_type(switchpin,GPIO_INTR_POSEDGE);
-pinMode(LED,output);
-setpwmpin();
+gpio_set_intr_type(switchpin,GPIO_INTR_POSEDGE); // POSITIVE EDGE TRIGGERED INTRREPT ADDED
+
 intreptqueue = xQueueCreate(10,sizeof(int));
 
 xTaskCreate(motiondetected," motion detected",2040,NULL,1,NULL);
-// xTaskCreate(led_control,"Control the led",2040,NULL,1,NULL);
 
 gpio_install_isr_service(0);
 gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
 }
+
+
 
 
