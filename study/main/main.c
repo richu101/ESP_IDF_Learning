@@ -59,11 +59,12 @@ ledc_channel_config_t channel = {
 ledc_channel_config(&channel);
 } 
  void led_control(){ 
-
+    setpwmpin(LED);
+    ESP_LOGI("LOG","LED fading ");
     for(int j = 1;j<=5;j++)
     {
 
-        ESP_LOGI("LOG","LED fade count = %d \n",j);
+        
         for(int i = 0 ; i < 1024; i+=20)
         {
             ledc_set_duty(LEDC_LOW_SPEED_MODE,LEDC_CHANNEL_0,i);
@@ -87,15 +88,13 @@ static void IRAM_ATTR gpio_isr_handler(void *args) //Intrrept Function
 }
 void motiondetected(void *args)
 { 
-    int PinNumber;
+  
     int pin ,count = 0;
     while(1)
     {
         
         if(xQueueReceive(intreptqueue,&pin,portMAX_DELAY))
         {
-            PinNumber = pin;
-
             gpio_isr_handler_remove(switchpin);
 
             do
@@ -105,13 +104,12 @@ void motiondetected(void *args)
             
 
             
-            ESP_LOGI("log","motion detected Count = %d\n",count++);
+        ESP_LOGI("LOG","motion detected Count = %d\n",++count);
         led_control();
 
-        gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
+            gpio_isr_handler_add(switchpin,gpio_isr_handler,(void *) switchpin);
 
         }
-        
         
         
     }
